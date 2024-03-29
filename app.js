@@ -2,6 +2,7 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const Quote = require('inspirational-quotes');
+const cors = require('cors');
 
 // Initialize Express app
 const app = express();
@@ -11,6 +12,12 @@ const uri = 'mongodb://localhost:27017/mydb'; // Connection URI
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
+};
+app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
