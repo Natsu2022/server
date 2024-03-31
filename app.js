@@ -12,9 +12,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 app.use(bodyParser.json());
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5173/register',
     credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
+    methods: ['GET', 'POST']
 };
 app.use(cors(corsOptions));
 
