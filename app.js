@@ -1,14 +1,13 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
-const Quote = require('inspirational-quotes');
 const cors = require('cors');
 
 // Initialize Express app
 const app = express();
 const port = 8000; // Port number
 
-const uri = 'mongodb://localhost:27017/mydb'; // Connection URI
+const uri = 'mongodb+srv://frontendtest:nsFj9F7YTW2BvnwZ@cluster.3nvsqiu.mongodb.net/'; // Connection URI
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
@@ -42,8 +41,8 @@ async function run() {
             const { username, email, password } = req.body;
 
             // Check if the username or email already exists in the database
-            const db = client.db('user');
-            const collection = db.collection('users');
+            const db = client.db('testAPI');
+            const collection = db.collection('Log');
             const existingUser = await collection.findOne({ $or: [{ username }, { email }] });
             if (existingUser) {
                 return res.status(400).json({ error: 'Username or email already exists' });
