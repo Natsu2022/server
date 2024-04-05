@@ -12,7 +12,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 app.use(bodyParser.json());
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:8080',
     credentials: true,
     methods: ['GET', 'POST']
 };
@@ -41,7 +41,7 @@ async function run() {
             const { username, email, password } = req.body;
 
             // Check if the username or email already exists in the database
-            const db = client.db('testAPI');
+            const db = client.db('UserDB');
             const collection = db.collection('Log');
             const existingUser = await collection.findOne({ $or: [{ username }, { email }] });
             if (existingUser) {
@@ -61,6 +61,23 @@ async function run() {
         catch (error) {
             console.error('Error:', error);
         }
+
+        app.get('/login', async (req, res) => {
+            // Get the username and password from the request
+            const { username, password } = req.body;
+            // Connect to the database and collection
+            const db = client.db('UserDB'); // Connect to the database
+            // Connect to the collection
+            const collection = db.collection('Log'); 
+            // Find the user in the collection
+            const user = await collection.findOne({ username, password });
+            // Check if the user is found
+            if (!user) { // If the user is not found, return an error
+                return res.status(400).json({ error: 'Invalid username or password' });
+            }
+            // Return a success message
+            res.status(200).json({ message: 'User logged in successfully' });
+        });
 }
 
 run().catch(console.error);
