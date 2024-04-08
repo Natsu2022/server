@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 COPY ./package.json ./
 
 # ทำการลง dependency node
-RUN npm install express mongodb body-parser nodemon cors
+RUN npm install express mongodb body-parser nodemon cors dotenv
 
 # copy file index.js เข้ามาใน container
 COPY ./app.js ./
