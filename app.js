@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
@@ -5,17 +6,13 @@ const cors = require('cors');
 
 // Initialize Express app
 const app = express();
-const port = 8000; // Port number
+const port = process.env.PORT; // Port number
 
-const uri = 'mongodb+srv://frontendtest:nsFj9F7YTW2BvnwZ@cluster.3nvsqiu.mongodb.net/'; // Connection URI
+const uri = process.env.DB_URL; // Connection URI
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
-const corsOptions = {
-    origin: 'http://localhost:8080',
-    credentials: true,
-    methods: ['GET', 'POST']
-};
+const corsOptions = process.env.CORSOPTION;
 app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
@@ -49,14 +46,25 @@ async function run() {
             }
 
             // Insert new user into the database
-            await collection.insertOne({ username, email, password });
+            await collection.insertOne({ username,
+                                         email,
+                                         password,
+                                         firstName:null,
+                                         lastName:null,
+                                         birthdath:null,
+                                         country:null,
+                                         city:null,
+                                         deleted_at: null,
+                                         created_at: String(new Date()),
+                                         updated_at: String(new Date()) });
+
             res.status(201).json({ message: 'User registered successfully' });
         });
         
         app.listen(port, () => {
-            console.log(`Server running on port http://localhost:${port}`);
+                console.log(`Server running on port http://localhost:${port}`);
         });
-        }
+    }
 
         catch (error) {
             console.error('Error:', error);
