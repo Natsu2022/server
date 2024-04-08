@@ -1,12 +1,16 @@
 version: '3.8'
 services:
-  node-server:
-    container_name: node
+  node-server: # Node server container
+    container_name: node-server
     build: .
     ports:
       - "8000:8000"
+    command: node app.js
+    volumes:
+      - ./app.js:/app.js
     depends_on:
       - mongodb  # Ensures the node server container starts after the MongoDB container
+  
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -19,6 +23,15 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: nsFj9F7YTW2BvnwZ
     networks:
       - mongodb_network
+
+  node-dashboard:
+    container_name: node-dashboard
+    build: . 
+    ports:
+      - "8100:8100"
+    command: node dashboard.js
+    volumes:
+      - ./dashboard.js:/dashboard.js
 
 networks:
   mongodb_network:

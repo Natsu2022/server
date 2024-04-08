@@ -13,9 +13,12 @@ RUN npm install express mongodb body-parser nodemon cors
 
 # copy file index.js เข้ามาใน container
 COPY ./app.js ./
+COPY ./dashboard.js ./
+COPY ./.env ./
 
 # ทำการปล่อย port 8000 ออกมาให้ access ได้
 EXPOSE 8000
+EXPOSE 8100
 
 # กำหนด command สำหรับเริ่มต้น run application (ตอน run container)
-CMD ["node", "app.js"]
+CMD ["node app.js", "node dashboard.js"]

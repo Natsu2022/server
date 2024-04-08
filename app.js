@@ -1,8 +1,10 @@
-require('dotenv').config();
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
+// Load environment variables
+require('dotenv').config();
 
 // Initialize Express app
 const app = express();
@@ -23,7 +25,7 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
     const data = {
-        massage: "I am a server, hear me roar!"
+        massage: "I am a server, server is running successfully!"
     };
     res.json(data);
 });
