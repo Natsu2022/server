@@ -5,8 +5,8 @@
   "main": "app.js dashboard.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "log": "node app.js",
-    "dashboard": "node dashboard.js"
+    "log": "nodemon app.js",
+    "dashboard": "nodemon dashboard.js"
   },
   "author": "",
   "license": "ISC",

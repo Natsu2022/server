@@ -34,7 +34,7 @@ async function run() {
             // Connect to the database and collection
             const db = client.db('UserDB'); // Connect to the database
             // Connect to the collection
-            const collection = db.collection('dashboard'); 
+            const collection = db.collection('dashboard');
             // Find the user in the collection
             const user = await collection.findOne({ userID, status });
             // Check if the user is found
@@ -45,11 +45,24 @@ async function run() {
                 const wareHouse = await result.find({}).toArray();
                 res.json({ wareHouse });
             }
-        }); 
+        });
+
+        app.get('/dashboard/item', async (req, res) => {
+            const { userID } = req.body;
+            const db = client.db('UserDB');
+            const collection = db.collection('dashboard');
+            const user = await collection.findOne({ userID });
+            if (!user) {
+                res.status(400).json({ error: 'Dashboard is not found.' });
+            } else {
+                result = db.collection('item');
+                const item = await result.find({}).toArray();
+                res.json({ item });
+            }
+        });
         app.listen(port, () => {
             console.log(`Server running on port http://localhost:${port}`);
         });
-
     } catch (e) {
         console.error(e);
     }

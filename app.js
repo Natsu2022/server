@@ -62,12 +62,12 @@ async function run() {
 
             res.status(201).json({ message: 'User registered successfully' });
         });
-        
+
         app.listen(port, () => {
                 console.log(`Server running on port http://localhost:${port}`);
         });
     }
-
+    
         catch (error) {
             console.error('Error:', error);
         }
