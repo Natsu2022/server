@@ -30,4 +30,7 @@ app.get('/dashboard', (req, res) => {
         message: "Welcome to the dashboard!"
     };
     res.json(data);
+
+    const db = client.db('UserDB');
+    const collection = db.collection('dashboard'); 
 });
