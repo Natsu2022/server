@@ -2,70 +2,130 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { message } = require('statuses');
 
 require('dotenv').config();
 
 // Initialize Express app
 const app = express();
 const port = process.env.DASHPORT; // Port number
- 
+
 const uri = process.env.DB_URL; // Connection URI
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
-const corsOptions = process.env.DASHCORSOPTION;
-
-app.use(cors(corsOptions));
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Header', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+app.use(cors());
 
 async function run() {
-    try {
-        await client.connect(); // Connect to the MongoDB instance
-        console.log('Connected to the MongoDB database');
+  try {
+    await client.connect(); // Connect to the MongoDB instance
+    console.log('Connected to the MongoDB database');
 
-        app.get('/dashboard', async (req, res) => {
-            // Get the username and password from the request
-            const { userID, status } = req.body;
-            // Connect to the database and collection
-            const db = client.db('UserDB'); // Connect to the database
-            // Connect to the collection
-            const collection = db.collection('dashboard');
-            // Find the user in the collection
-            const user = await collection.findOne({ userID, status });
-            // Check if the user is found
-            if (!user) { // If the user is not found, return an error
-                res.status(400).json({ error: 'Dashboard is not found.' });
-            } else {
-                result = db.collection('wareHouse');
-                const wareHouse = await result.find({}).toArray();
-                res.json({ wareHouse });
-            }
-        });
-
-        app.get('/dashboard/item', async (req, res) => {
-            const { userID } = req.body;
+    app.get('/dashboard', async (req,res)=>{
+        try{
             const db = client.db('UserDB');
             const collection = db.collection('dashboard');
-            const user = await collection.findOne({ userID });
+         
+            const { userID, status } = req.body;
+         
+            const user = await collection.findOne({ userID, status });
+        
             if (!user) {
-                res.status(400).json({ error: 'Dashboard is not found.' });
-            } else {
-                result = db.collection('item');
-                const item = await result.find({ }).toArray();
-                res.json({ item });
+                return res.status(404).json({ error: 'Dashboard not found' });
             }
-        });
-        app.listen(port, () => {
-            console.log(`Server running on port http://localhost:${port}`);
-        });
-    } catch (e) {
-        console.error(e);
-    }
+            else{
+                res.json({message:"Dashboard is found"});
+            }
+        }   catch (error) {
+                console.error(error);
+                res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+    app.get('/dashboard/cicleChart', async (req, res) => {
+        try {
+         const db = client.db('UserDB');
+         const collection = db.collection('dashboard');
+         
+         const { userID, status } = req.body;
+         
+         const user = await collection.findOne({ userID, status });
+        
+         if (!user) {
+          return res.status(404).json({ error: 'Dashboard not found' });
+         }
+        
+         const wareHouseCollection = db.collection('wareHouse');
+         
+         // Find data from warehouse collection
+         const resultArray= await wareHouseCollection.find({}, { type: 1, inStock: 1 }).toArray();
+        
+          // Extract specific data fields
+          const extractedData = resultArray.map(({ type, inStock }) => ({ type, inStock }));
+          
+          res.json({ result: extractedData });
+       
+        } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+        }
+       });
+
+    app.get('/dashboard/lineChart', async (req,res)=>{
+      try{
+      	const db=client.db("UserDB");
+      	const collection=db.collection("dashboard");
+      	
+      	const {userID,status}=req.body;
+      	
+      	const user=await collection.findOne({userID,status});
+      
+      	if (!user){
+      		return res.status(404).json({error:"Dashboard not found"});
+      	}
+      
+      	const wareHouse=db.collection("wareHouse");
+      
+	      const result=await wareHouse.find({},{"type":1,"inStock":1}).toArray({}); // Find data from warehouse collection
+      	
+      	res.json({result});
+      } catch (error){
+      	console.error(error);
+      	res.status(500).json({error:"Internal Server Error"});
+      }
+    });
+
+    app.get('/dashboard/item', async (req, res) => {
+      try {
+        const db = client.db('UserDB');
+        const collection = db.collection('dashboard');
+
+        const { userID } = req.body;
+
+        const user = await collection.findOne({ userID });
+
+        if (!user) {
+          return res.status(404).json({ error: 'Dashboard not found' });
+        }
+
+        const itemCollection = db.collection("item");
+        
+        const items=await itemCollection.find({"itemName": "body"}).toArray();
+        
+         res.json({ items });
+       
+      } catch (error) {
+         console.error(error);
+         res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
+    app.listen(port, () => {
+      console.log(`Server running on port http://localhost:${port}`);
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 run().catch(console.error);
