@@ -61,6 +61,7 @@ async function run() {
                                          updated_at: String(new Date()) });
 
             res.status(201).json({ message: 'User registered successfully' });
+            db.close();
         });
 
         app.listen(port, () => {

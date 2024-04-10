@@ -56,7 +56,7 @@ async function run() {
                 res.status(400).json({ error: 'Dashboard is not found.' });
             } else {
                 result = db.collection('item');
-                const item = await result.find({}).toArray();
+                const item = await result.find({ }).toArray();
                 res.json({ item });
             }
         });
