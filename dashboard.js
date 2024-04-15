@@ -8,12 +8,16 @@ require('dotenv').config();
 
 // Initialize Express app
 const app = express();
-const port = process.env.DASHPORT; // Port number
-
-const uri = process.env.DB_URL; // Connection URI
+ // Port number
+const port = process.env.DASHPORT;
+// Connection URI
+const uri = process.env.DB_URL; 
+// Connection to the MongoDB instance
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Middleware
 app.use(bodyParser.json());
+// CORS
 app.use(cors());
 
 async function run() {
@@ -52,16 +56,16 @@ async function run() {
          const user = await collection.findOne({ userID, status });
         
          if (!user) {
-          return res.status(404).json({ error: 'Dashboard not found' });
+          return res.status(404).json({ error: 'Cicle chart not found' });
          }
         
          const wareHouseCollection = db.collection('wareHouse');
          
          // Find data from warehouse collection
-         const resultArray= await wareHouseCollection.find({}, { type: 1, inStock: 1 }).toArray();
+         const resultArray= await wareHouseCollection.find({}, { wareHouseID: 1, inStock: 1 }).toArray();
         
           // Extract specific data fields
-          const extractedData = resultArray.map(({ type, inStock }) => ({ type, inStock }));
+          const extractedData = resultArray.map(({ wareHouseID, inStock }) => ({ wareHouseID, inStock }));
           
           res.json({ result: extractedData });
        
@@ -71,31 +75,49 @@ async function run() {
         }
        });
 
-    app.get('/dashboard/lineChart', async (req,res)=>{
-      try{
-      	const db=client.db("UserDB");
-      	const collection=db.collection("dashboard");
-      	
-      	const {userID,status}=req.body;
-      	
-      	const user=await collection.findOne({userID,status});
-      
-      	if (!user){
-      		return res.status(404).json({error:"Dashboard not found"});
-      	}
-      
-      	const wareHouse=db.collection("wareHouse");
-      
-	      const result=await wareHouse.find({},{"type":1,"inStock":1}).toArray({}); // Find data from warehouse collection
-      	
-      	res.json({result});
-      } catch (error){
-      	console.error(error);
-      	res.status(500).json({error:"Internal Server Error"});
-      }
+       app.get('/dashboard/lineChart', async (req, res) => {
+        try {
+            const db = client.db("UserDB");
+            const collection = db.collection("dashboard");
+    
+            const { userID, status } = req.body;
+    
+            const user = await collection.findOne({ userID, status });
+    
+            if (!user) {
+                return res.status(404).json({ error: "Line chart not found" });
+            }
+    
+            const wareHouse = db.collection("item");
+    
+            // Find data from warehouse collection
+            const result = await wareHouse.find({}).toArray();
+    
+            // Group data by date and calculate total quantity of items for each date
+            const sortedData = {};
+            result.forEach(item => {
+                const date = new Date(item.inDate).toLocaleDateString(); // Extract date part only
+    
+                // Initialize total quantity for the date if not already present
+                if (!sortedData[date]) {
+                    sortedData[date] = 0;
+                }
+    
+                // Increment total quantity for the date
+                sortedData[date] += 1; // Assuming each item has a quantity of 1
+            });
+    
+            res.json({ result: sortedData });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Internal Server Error" });
+        }
     });
+    
+    
+    
 
-    app.get('/dashboard/item', async (req, res) => {
+    app.get('/dashboard/list', async (req, res) => {
       try {
         const db = client.db('UserDB');
         const collection = db.collection('dashboard');
