@@ -18,7 +18,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // Middleware
 app.use(bodyParser.json());
 // CORS
-app.use(cors());
+const corsOptions = process.env.DASHCORSOPTION;
+app.use(cors(corsOptions));
 
 async function run() {
   try {
