@@ -17,6 +17,8 @@ const port = process.env.PORT; // Port number
 const uri = process.env.DB_URL; // Connection URI
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+// const token = jwt.sign({ username, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
 app.use(bodyParser.json());
 const corsOptions = process.env.CORSOPTION;
 app.use(cors(corsOptions));

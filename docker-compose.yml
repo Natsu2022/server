@@ -33,6 +33,15 @@ services:
     volumes:
       - ./dashboard.js:/dashboard.js
 
+  node-settings:
+    container_name: node-dashboard
+    build: . 
+    ports:
+      - "8200:8200"
+    command: node setting.js
+    volumes:
+      - ./setting.js:/setting.js
+
 networks:
   mongodb_network:
 
