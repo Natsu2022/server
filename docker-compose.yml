@@ -34,7 +34,7 @@ services:
       - ./dashboard.js:/dashboard.js
 
   node-settings:
-    container_name: node-dashboard
+    container_name: node-settings
     build: . 
     ports:
       - "8200:8200"
