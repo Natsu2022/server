@@ -58,43 +58,60 @@ async function run() {
         });
 
         // Define routes
-        app.post('/register', async (req, res) => {
+        app.post('/register', [
+            body('username').notEmpty().trim().escape().isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+            body('email').notEmpty().trim().escape().isEmail().withMessage('Invalid email address'),
+            body('password').notEmpty().trim().escape().isLength({ min: 8 }).withMessage('Password must be at least 6 characters long')
+        ], async (req, res) => {
             const { username, email, password } = req.body;
-
-            // Hash the password
-            const salt = await bcrypt.genSalt(10);
-            const Email = await bcrypt.hash(email, salt);
-            const Password = await bcrypt.hash(password, salt);
-
-            // Check if the username or email already exists in the database
-            const db = client.db('UserDB');
-            const collection = db.collection('Log');
-            const existingUser = await collection.findOne({ $or: [{ username }, { Email }] });
-            if (existingUser) {
-                return res.status(400).json({ error: 'Username or email already exists' });
+            
+            if ( username && email && password ) {
+                
+                // Check if the username, email, or password is missing
+                const session = req.session;
+                // Set session data
+                session.isRegister = true;            
+                
+                // Hash
+                const salt = await bcrypt.genSalt(10);
+                const Email = await bcrypt.hash(email, salt);
+                const Password = await bcrypt.hash(password, salt);
+                
+                // Check if the username or email already exists in the database
+                const db = client.db('UserDB');
+                const collection = db.collection('Log');
+                const existingUser = await collection.findOne({ $or: [{ username }, { Email }] });
+                if (existingUser) {
+                    return res.status(400).json({ error: 'Username or email already exists' });
+                } else {
+                    const random = Math.floor(Math.random() * 1000000);
+                // Insert new user into the database
+                    await collection.insertOne({ 
+                        userID:`admin${random}`,
+                        username,
+                        Email,
+                        Password,
+                        firstName:null,
+                        lastName:null,
+                        birthdath:null,
+                        country:null,
+                        city:null,
+                        deleted_at: null,
+                        created_at: String(new Date()),
+                        updated_at: String(new Date()) 
+                    });
+                }
+                res.status(201).json({ message: 'User registered successfully' });
+            } else {
+                res.status(400).json({ error: 'Username, email, and password are required'});
             }
-
-            // Insert new user into the database
-            await collection.insertOne({ username,
-                                         Email,
-                                         Password,
-                                         firstName:null,
-                                         lastName:null,
-                                         birthdath:null,
-                                         country:null,
-                                         city:null,
-                                         deleted_at: null,
-                                         created_at: String(new Date()),
-                                         updated_at: String(new Date()) });
-
-            res.status(201).json({ message: 'User registered successfully' });
         });
-
+    
         app.listen(port, () => {
-                console.log(`Server running on port http://localhost:${port}`);
+            console.log(`Server running on port http://localhost:${port}`);
         });
-    } catch (error) {
-            console.error('Error:', error);
+        } catch (error) {
+                console.error('Error:', error);
         }
 
         app.get('/login', async (req, res) => {
