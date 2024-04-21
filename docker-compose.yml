@@ -11,6 +11,16 @@ services:
     depends_on:
       - mongodb  # Ensures the node server container starts after the MongoDB container
   
+  nginx: # Nginx container
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf 
+    depends_on:
+      - node-server  # Ensures the Nginx container starts after the Node server container
+
   mongodb:
     image: mongo:latest
     container_name: mongodb
