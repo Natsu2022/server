@@ -3,13 +3,12 @@
     "builds": [
         {
             "src": "app.js",
-            "use": "@now/node",
-            "config": { "zeroConfig": true }
+            "use": "@now/node"
         }
     ],
     "routes": [
         { 
-            "src": "/.*",
+            "src": "/.(*)",
             "dest": "app.js" 
         }
     ]
