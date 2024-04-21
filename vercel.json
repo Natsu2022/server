@@ -1,0 +1,16 @@
+{
+    "version": "1.7",
+    "builds": [
+        {
+            "src": "app.js",
+            "use": "@now/node",
+            "config": { "zeroConfig": true }
+        }
+    ],
+    "routes": [
+        { 
+            "src": "/.*",
+            "dest": "app.js" 
+        }
+    ]
+}
