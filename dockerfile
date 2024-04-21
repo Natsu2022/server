@@ -9,18 +9,13 @@ WORKDIR /usr/src/app
 COPY ./package.json ./
 
 # ทำการลง dependency node
-RUN npm install express mongodb body-parser nodemon cors dotenv bcrypt bcryptjs cookie-session ejs jsonwebtoken --save
+RUN npm install --save
 
 # copy file index.js เข้ามาใน container
-COPY ./app.js ./
-COPY ./dashboard.js ./
-COPY ./setting.js ./
-COPY ./.env ./
+COPY . .
 
 # ทำการปล่อย port 8000 ออกมาให้ access ได้
 EXPOSE 8000
-EXPOSE 8100
-EXPOSE 8200
 
 # กำหนด command สำหรับเริ่มต้น run application (ตอน run container)
-CMD ["node app.js", "node dashboard.js", "node setting.js"]
+CMD ["node", "index.js"]

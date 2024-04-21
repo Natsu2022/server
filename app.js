@@ -1,4 +1,5 @@
 const express = require("express");
+const https = require("https");
 const { MongoClient } = require("mongodb");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -7,7 +8,13 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const fs = require("fs");
 const { body, validationResult } = require("express-validator");
+
+const main = require ("./main");
+const dashboard = require ("./dashboard");
+const settings = require ("./setting");
 
 // Load environment variables
 require("dotenv").config();
@@ -25,6 +32,11 @@ const client = new MongoClient(uri, {
 const secret = "mysecret"; // Secret key for JWT
 // const token = jwt.sign({ username, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+const sslServer = https.createServer({
+  key: "",
+  cert: ""
+}, app);
+
 app.use(bodyParser.json());
 const corsOptions = process.env.CORSOPTION;
 app.use(cors(corsOptions));
@@ -39,35 +51,17 @@ app.use(
   })
 );
 
-const ifNotLoggedin = (req, res, next) => {
-  if (!req.session.isLoggedIn) {
-    return res.status(401).json({ message: "You are not logged in" });
-  }
-  next();
-};
+app.get("/", main.main);
+app.get("/test", main.test);
 
-const ifLoggedin = (req, res, next) => {
-  if (req.session.isLoggedIn) {
-    return res.status(401).json({ message: "You are already logged in" });
-  }
-  next();
-};
+app.listen(port, () => {
+  console.log(`Server running on port http://localhost:${port}`);
+});
 
 async function run() {
   try {
     await client.connect(); // Connect to the MongoDB instance
     console.log("Connected to the MongoDB database");
-
-    // Define routes
-    app.get("/", ifNotLoggedin, async (req, res) => {
-      const db = client.db("UserDB");
-      const collection = db.collection("Log");
-      const user = await collection.findOne({ username: req.session.username });
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json({ message: `Hello, ${user.username}` });
-    });
 
     // Define routes
     app.post(
@@ -208,9 +202,12 @@ async function run() {
       }
     });
 
-    app.listen(port, () => {
-      console.log(`Server running on port http://localhost:${port}`);
-    });
+    app.get("/dashboard", dashboard.dashboard);
+    app.get("/cicleChart", dashboard.cicleChart);
+    app.get("/lineChart", dashboard.lineChart);
+    app.get("/list", dashboard.list);
+    app.put("/update", settings.account);
+    app.put("/resetpassword", settings.resetpassword);
   } catch (error) {
     console.error("Error:", error);
   }

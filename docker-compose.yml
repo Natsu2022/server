@@ -17,7 +17,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf 
+      - ./conf.d:/etc/nginx/conf.d 
     depends_on:
       - node-server  # Ensures the Nginx container starts after the Node server container
 
@@ -33,24 +33,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: nsFj9F7YTW2BvnwZ
     networks:
       - mongodb_network
-
-  node-dashboard:
-    container_name: node-dashboard
-    build: . 
-    ports:
-      - "8100:8100"
-    command: node dashboard.js
-    volumes:
-      - ./dashboard.js:/dashboard.js
-
-  node-settings:
-    container_name: node-settings
-    build: . 
-    ports:
-      - "8200:8200"
-    command: node setting.js
-    volumes:
-      - ./setting.js:/setting.js
 
 networks:
   mongodb_network:
