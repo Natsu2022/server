@@ -5,11 +5,7 @@
   "main": "app.js dashboard.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "log": "node ./reg_log/app.js",
-    "dashboard": "node ./dash/dashboard.js",
-    "settings": "node ./setting/settings.js",
-    "build": "docker-compose up -d --build",
-    "donw": "docker-compose down"
+    "settings": "nodemon settings.js"
   },
   "author": "",
   "license": "ISC",

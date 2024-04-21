@@ -12,9 +12,9 @@ COPY ./package.json ./
 RUN npm install express mongodb body-parser nodemon cors dotenv bcrypt bcryptjs cookie-session ejs jsonwebtoken --save
 
 # copy file index.js เข้ามาใน container
-COPY ./app.js ./
-COPY ./dashboard.js ./
-COPY ./setting.js ./
+COPY ./reg_log/app.js ./
+COPY ./dash/dashboard.js ./
+COPY ./setting/setting.js ./
 COPY ./.env ./
 
 # ทำการปล่อย port 8000 ออกมาให้ access ได้
