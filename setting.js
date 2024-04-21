@@ -1,5 +1,6 @@
 // Init MongoDB
 const { MongoClient } = require("mongodb");
+const bcrypt = require("bcryptjs");
 // Load environment variables
 require("dotenv").config();
 
