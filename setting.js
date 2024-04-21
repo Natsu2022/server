@@ -1,36 +1,10 @@
-const express = require("express");
+// Init MongoDB
 const { MongoClient } = require("mongodb");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const cookieSession = require("cookie-session");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { body, validationResult } = require("express-validator");
-
 // Load environment variables
 require("dotenv").config();
 
-// Initialize Express app
-const app = express();
-const port = process.env.PORT; // Port number
-
 const uri = process.env.DB_URL; // Connection URI
-const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-app.use(bodyParser.json());
-const corsOptions = process.env.CORSOPTION;
-app.use(cors(corsOptions));
-app.use(express.urlencoded({ extended: false }));
-app.use(
-    cookieSession({
-        name: "session",
-        keys: ["key1", "key2"],
-        masAge: 24 * 60 * 60 * 1000, // 24 hours
-    })
-);
+const client = new MongoClient(uri);
 
 const account = async (req, res) => {
     const db = await client.db("UserDB");
