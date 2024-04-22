@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 8000
 
 # กำหนด command สำหรับเริ่มต้น run application (ตอน run container)
-CMD ["node", "index.js"]
+CMD ["node", "app.js"]
