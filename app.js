@@ -15,6 +15,7 @@ const { body, validationResult } = require("express-validator");
 const main = require ("./main");
 const dashboard = require ("./dashboard");
 const settings = require ("./setting");
+const project = require ("./project");
 
 // Load environment variables
 require("dotenv").config();
@@ -90,9 +91,9 @@ async function run() {
         if (username && email && password) {
           // Token
           const token = jwt.sign({ username, role: "registered " }, secret, {
-            expiresIn: "1day",
+            expiresIn: "1day"
           });
-
+ 
           if (!token) {
             return res.status(500).json({ message: "Token not generated" });
           }
@@ -108,7 +109,7 @@ async function run() {
           const existingUser = await collection.findOne({
             $or: [{ username }, { Email }],
           });
-          
+
           if (existingUser) {
             return res
               .status(400)
@@ -130,6 +131,15 @@ async function run() {
               deleted_at: null,
               created_at: String(new Date()),
               updated_at: String(new Date()),
+            });
+            const userid = `admin${random}`;
+            // create a new collection
+            const newDashboard = db.collection("dashboard");
+            const randomDashID = Math.floor(Math.random() * 1000000);
+            await newDashboard.insertOne({ 
+              dashboardID: `Dash${randomDashID}`,
+              userID: userid,
+              status: "active"
             });
           
           res.status(201).json({ message: "User registered successfully" });
@@ -205,6 +215,8 @@ async function run() {
     app.get("/list", dashboard.list);
     app.put("/update", settings.account);
     app.put("/resetpassword", settings.resetpassword);
+    app.get("/getProject", project.getProject);
+    app.post("/newProject", project.newProject);
   } catch (error) {
     console.error("Error:", error);
   }

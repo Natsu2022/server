@@ -130,3 +130,5 @@ dist
 
 # ignore node_modules directory
 node_modules/
+
+.wandering-term-e38f/
