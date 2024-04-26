@@ -30,11 +30,6 @@ const client = new MongoClient(uri);
 const secret = "mysecret"; // Secret key for JWT
 // const token = jwt.sign({ username, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-const sslServer = https.createServer({
-  key: "",
-  cert: ""
-}, app);
-
 app.use(bodyParser.json());
 const corsOptions = process.env.CORSOPTION;
 app.use(cors(corsOptions));
@@ -217,6 +212,10 @@ async function run() {
     app.put("/resetpassword", settings.resetpassword);
     app.get("/getProject", project.getProject);
     app.post("/newProject", project.newProject);
+    app.post("/newBox", project.newBox);
+    app.get("/getBox", project.getBox);
+    app.put("/editBox", project.editBox);
+    app.delete("/deleteBox", project.deleteBox);
   } catch (error) {
     console.error("Error:", error);
   }
