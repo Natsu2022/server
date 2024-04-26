@@ -3,7 +3,7 @@ I am beginning backend developer.
 In this file README.md . I told you about port to use and command.
 port :  http://localhost8000;
 
-method  : /register
+API     : /register
         : /login
         : /dashboard
         : /cicleChart
@@ -13,6 +13,7 @@ method  : /register
         : /resetpassword
         : /getProject
         : /newProject
+        : /
 
 command :  node app.js
         :  nodemon app.js  
