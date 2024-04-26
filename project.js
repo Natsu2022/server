@@ -9,33 +9,36 @@ const client = new MongoClient(uri);
 
 const getProject = async (req, res) => {
   try {
+    const { username } = req.body;
     const db = client.db('UserDB');
     const collection = db.collection('Log');
-
-    const { username } = req.body;
-
     const user = await collection.findOne({ username });
-
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(400).json({ message: 'User not found.' });
     } else {
-      const projectCollection = db.collection("project");
-
-      // Find items and project only the required fields
-      const project = await projectCollection.find({}, { PID: 1 }).toArray();
-      const tfProject = project.map(project => ({
-        length: project.length,
-        width: project.width,
-        update_at: project.create_at
-      }));
-      res.json({ items: tfProject });
+      userid = user.userID;
+      const dashboardCollection = db.collection('dashboard');
+      const dashboard = await dashboardCollection.findOne({ userID: userid })
+      if (!dashboard) {
+        return res.status(400).json({ message: 'Dashboard not found.' });
+      } else {
+        const projectCollection = db.collection('project');
+        const project = await projectCollection.find({ dashboardID: dashboard.dashboardID }, { PID: 1 }).toArray();
+        // Find items and project only the required fields
+        const tfProject = project.map(project => ({
+          PID: project.PID,
+          width: project.size.width,
+          length: project.size.length,
+          update_at: project.updated_at
+        }));
+        res.json({ Project: tfProject });
+      }
     }
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error, err 500 Method getProject' });
   }
-};
+}
 
 const newProject = async (req, res) => {
   try {
@@ -52,7 +55,6 @@ const newProject = async (req, res) => {
       if (!dashboard) {
         return res.status(400).json({ message: 'Dashboard not found.' });
       } else {
-
         const projectCollection = db.collection('project');
         let randomID = Math.floor(Math.random() * 10000),
           newProject = await projectCollection.insertOne({
