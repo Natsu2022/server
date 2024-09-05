@@ -1,16 +1,12 @@
 const express = require("express");
-const https = require("https");
 const { MongoClient } = require("mongodb");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const cookieSession = require("cookie-session");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const fs = require("fs");
-const { body, validationResult } = require("express-validator");
+const { body } = require("express-validator");
 
 const main = require ("./main");
 const dashboard = require ("./dashboard");

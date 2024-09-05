@@ -1,6 +1,6 @@
 
-const { MongoClient, ServerDescription } = require("mongodb");
-const bcrypt = require("bcryptjs");
+const { MongoClient } = require("mongodb");
+
 // Load environment variables
 require("dotenv").config();
 
